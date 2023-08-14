@@ -15,6 +15,6 @@ jobs:
       process_data: true
       split_data: true
       train_on_local: true
-      local_deployment: true
+      local_deployment: false
       k8s_deployment: false
     secrets: inherit

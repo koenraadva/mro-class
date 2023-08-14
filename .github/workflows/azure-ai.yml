@@ -20,7 +20,7 @@ on:
       api_creation:
         description: 'API Creation'
         type: boolean
-        default: true
+        default: false
         required: true
       process_data:
         description: 'Check to skip the processing of the original Dataset'
@@ -65,7 +65,7 @@ on:
       api_creation:
         description: 'API Creation'
         type: boolean
-        default: true
+        default: false
         required: true
       process_data:
         description: 'Check to skip the processing of the original Dataset'
