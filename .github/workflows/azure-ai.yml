@@ -12,25 +12,25 @@ on:
         type: boolean
         default: true
         required: true
-      ai_training:
-        description: 'AI Training'
-        type: boolean
-        required: true
-        default: true
-      api_creation:
-        description: 'API Creation'
-        type: boolean
-        default: false
-        required: true
       process_data:
-        description: 'Check to skip the processing of the original Dataset'
+        description: 'Processing of the original Dataset'
         type: boolean
         default: true
         required: true
       split_data:
-        description: 'Check to skip the Split of the Training and Testing sets'
+        description: 'Split in Training and Testing sets'
         type: boolean
         default: true
+        required: true
+      ai_training:
+        description: 'AI Training'
+        type: boolean
+        required: true
+        default: false
+      api_creation:
+        description: 'API Creation'
+        type: boolean
+        default: false
         required: true
       train_on_local:
         description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'
@@ -57,16 +57,6 @@ on:
         type: boolean
         required: true
         default: true
-      ai_training:
-        description: 'AI Training'
-        type: boolean
-        required: true
-        default: true
-      api_creation:
-        description: 'API Creation'
-        type: boolean
-        default: false
-        required: true
       process_data:
         description: 'Check to skip the processing of the original Dataset'
         type: boolean
@@ -76,6 +66,16 @@ on:
         description: 'Check to skip the Split of the Training and Testing sets'
         type: boolean
         default: true
+        required: true
+      ai_training:
+        description: 'AI Training'
+        type: boolean
+        required: true
+        default: true
+      api_creation:
+        description: 'API Creation'
+        type: boolean
+        default: false
         required: true
       train_on_local:
         description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'

@@ -10,6 +10,9 @@ from utils import connectWithAzure
 from azureml.core import Dataset
 from azureml.data.datapath import DataPath
 
+import nltk
+nltk.download("stopwords")
+
 # When you work locally, you can use a .env file to store all your environment variables.
 # This line reads those variables.
 load_dotenv()
