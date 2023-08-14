@@ -104,7 +104,7 @@ env:
   RESOURCE_GROUP: mlops-demo # Change this !
   SUBSCRIPTION_ID: 1e0f5c51-40a2-4bec-92db-decf94235b27 # Change this !
 
-  MRO_LANG: "norwegian,french,russian" # Language of the dataset. Can be extended in the future to support multiple languages
+  MRO_LANG: norwegian,french,russian # Language of the dataset. Can be extended in the future to support multiple languages
   TRAIN_SET_NAME: train_spare_parts
   TEST_SET_NAME: test_spare_parts
   MODEL_NAME: mro-model
@@ -164,7 +164,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      ALPHA: "0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7"
+      ALPHA: 0.00001, 0.0001, 0.001, 0.1, 1, 10, 100,1000
       FOLDS: 10
       SCORING: accuracy
       EXPERIMENT_NAME: mro-classification
