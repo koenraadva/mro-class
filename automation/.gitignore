@@ -1,0 +1,13 @@
+tmp/**
+
+.env
+.config
+# .devcontainer
+data
+
+Notes.txt
+
+**/__pycache__
+api/outputs/**
+
+kubernetes-mro-class-tmp.yaml

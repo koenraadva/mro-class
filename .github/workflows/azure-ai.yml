@@ -1,0 +1,330 @@
+# This is a basic workflow to help you get started with Actions
+
+name: MLOps Azure Data Preparing and AI Training
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events
+  workflow_call:
+    inputs:
+      data_prep:
+        description: 'Data Preparation'
+        type: boolean
+        default: true
+        required: true
+      ai_training:
+        description: 'AI Training'
+        type: boolean
+        required: true
+        default: true
+      api_creation:
+        description: 'API Creation'
+        type: boolean
+        default: true
+        required: true
+      process_data:
+        description: 'Check to skip the processing of the original Dataset'
+        type: boolean
+        default: true
+        required: true
+      split_data:
+        description: 'Check to skip the Split of the Training and Testing sets'
+        type: boolean
+        default: true
+        required: true
+      train_on_local:
+        description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'
+        type: boolean
+        default: false
+        required: true
+      local_deployment:
+        description: 'Check if we should deploy the API locally later on.'
+        type: boolean
+        default: false
+        required: true
+      k8s_deployment:
+        description: 'Check if we should deploy on local Kubernetes cluster.'
+        type: boolean
+        default: false
+        required: true
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    # branches: [ main, master ]
+    inputs:
+      data_prep:
+        description: 'Data Preparation'
+        type: boolean
+        required: true
+        default: true
+      ai_training:
+        description: 'AI Training'
+        type: boolean
+        required: true
+        default: true
+      api_creation:
+        description: 'API Creation'
+        type: boolean
+        default: true
+        required: true
+      process_data:
+        description: 'Check to skip the processing of the original Dataset'
+        type: boolean
+        default: true
+        required: true
+      split_data:
+        description: 'Check to skip the Split of the Training and Testing sets'
+        type: boolean
+        default: true
+        required: true
+      train_on_local:
+        description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'
+        type: boolean
+        default: false
+        required: true
+      local_deployment:
+        description: 'Check if we should deploy the API locally later on.'
+        type: boolean
+        default: false
+        required: true
+      k8s_deployment:
+        description: 'Check if we should deploy on local Kubernetes cluster.'
+        type: boolean
+        default: false
+        required: true
+    
+# These are the global environment values that can be used by all the jobs, because they all need access to these values.
+env:
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }} # Set this value in your GitHub actions Secrets
+
+  CLIENT_ID: c2250f8d-f977-49b5-9d19-37ceb9b26bac # Change this !
+  TENANT_ID: 4ded4bb1-6bff-42b3-aed7-6a36a503bf7a # Change this !
+  
+  WORKSPACE_NAME: koenraadva-ml # Change this !
+  RESOURCE_GROUP: mlops-demo # Change this !
+  SUBSCRIPTION_ID: 1e0f5c51-40a2-4bec-92db-decf94235b27 # Change this !
+
+  MRO_LANG: "norwegian,french,russian" # Language of the dataset. Can be extended in the future to support multiple languages
+  TRAIN_SET_NAME: train_spare_parts
+  TEST_SET_NAME: test_spare_parts
+  MODEL_NAME: mro-model
+
+  SCRIPT_FOLDER: scripts
+
+  RANDOM_SEED: 42 # Random values that should be same for all the steps
+
+  WORKDIR: automation # This is the directory of your GitHub repository codebase that contains all the Python scripts to run in order.
+  GIT_SHA: ${{ github.sha }} # Set the SHA to use in the code
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  data-preparing:
+    if: ${{ inputs.data_prep }}
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04 # Because of issues with dotnet, we downgraded this one
+
+    # These environment values are specific for this job, and not used in all the other ones...
+    env:
+      # DATA_FOLDER: data (not used !)
+      DATASET_VERSION: 'latest'
+      TRAIN_TEST_SPLIT_FACTOR: 0.20
+      PROCESS_DATA: ${{ inputs.process_data }} # Make the pipeline skip processing the data
+      SPLIT_DATA: ${{ inputs.split_data }} # Make the pipeline skip splitting the data
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: 'Set up python'
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          cache: 'pip'
+      
+      - name: 'install requirements'
+        run: pip install -r requirements.txt
+        working-directory: ${{ env.WORKDIR }}
+          
+      - name: 'Run data prep script'
+        id: dataprep
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          python steps/01_DataPreparing.py
+
+  ai-training:
+    needs: [data-preparing]
+    # This will run Always BUT only when the previous job was successful or skipped && the ai_Training flag is set to true.
+    if: ${{
+        always() &&
+        (needs.data-preparing.result == 'success' || needs.data-preparing.result == 'skipped') &&
+        inputs.ai_training
+      }}
+    runs-on: ubuntu-20.04
+
+    env:
+      ALPHA: "0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7"
+      FOLDS: 10
+      SCORING: accuracy
+      EXPERIMENT_NAME: mro-classification
+
+      ## Compute cluster parts
+      AML_COMPUTE_CLUSTER_NAME: cpu-cluster
+      AML_COMPUTE_CLUSTER_MIN_NODES: 0
+      AML_COMPUTE_CLISTER_MAX_NODES: 4
+      AML_COMPUTE_CLUSTER_SKU: STANDARD_D2_V2
+
+      TRAIN_ON_LOCAL: ${{ inputs.train_on_local }} # If you want to train on your local runner, set this to True.
+
+      ## Training environment
+      CONDA_DEPENDENCIES_PATH: conda_dependencies.yml
+      TRAINING_ENV_NAME: mro-classification-env-training
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: 'Set up python'
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          cache: 'pip'
+
+      - name: 'install requirements'
+        run: pip install -r requirements.txt
+        working-directory: ${{ env.WORKDIR }}
+
+
+      - name: 'Run training script on GitHub Runner'
+        id: aitraining
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          python steps/02_AITraining.py
+
+
+  api-creation:
+    needs: [data-preparing, ai-training]
+    # This will run Always BUT only when the previous two jobs were successful or skipped && the api_creation flag is set to true.
+    if: ${{
+        always() &&
+        (needs.data-preparing.result == 'success' || needs.data-preparing.result == 'skipped') &&
+        (needs.ai-training.result == 'success' || needs.ai-training.result == 'skipped') &&
+        inputs.api_creation
+      }}
+    runs-on: ubuntu-latest
+
+    env:
+      DEPLOYMENT_DEPENDENCIES: deployment_environment.yml
+      DEPLOYMENT_ENV_NAME: mro-classification-env-deployment
+      SCORE_SERVICE_NAME: mro-classification-svc
+      LOCAL_MODEL_PATH: api/outputs
+      LOCAL_DEPLOYMENT: ${{ inputs.local_deployment }}
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: 'Set up python'
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          cache: 'pip'
+
+      - name: 'install requirements'
+        run: pip install -r requirements.txt
+        working-directory: ${{ env.WORKDIR }}
+
+
+      - name: 'Run deployment script'
+        id: deployment
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          python steps/03_Deployment.py
+
+      - name: Upload API Code for Docker
+        if: inputs.local_deployment
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-config
+          path: ${{ env.WORKDIR }}/api
+
+  docker-build-and-push:
+    needs: [api-creation]
+    # This will run Always BUT only when the previous two jobs were successful or skipped && the local_deployment flag is set to true.
+    if: ${{
+        always() &&
+        (needs.api-creation.result == 'success' || needs.api-creation.result == 'skipped') &&
+        inputs.local_deployment
+      }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download docker-config artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-config
+
+      - name: Gather Docker Meta Information
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ghcr.io/koenraadva/mro-class
+          # generate Docker tags based on the following events/attributes:
+          # The GitHub Branch
+          # The GitHub SHA
+          # More info: https://github.com/docker/build-push-action/blob/master/docs/advanced/tags-labels.md
+          tags: |
+            type=ref,event=branch
+            type=sha
+      
+      # Enter your GITHUB Token here!
+      - name: Login to GHCR
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  k8s-deploy:
+    needs: [docker-build-and-push]
+    # This will run Always BUT only when the previous job was successful or skipped && the k8s_deployment flag is set to true.
+    if: ${{
+        always() &&
+        (needs.docker-build-and-push.result == 'success' || needs.docker-build-and-push.result == 'skipped') &&
+        inputs.k8s_deployment
+      }}
+    runs-on: self-hosted
+
+    steps:
+     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Pass GitHub actions parameters to Kubernetes deployment
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          envsubst <  kubernetes-mlops.yaml > kubernetes-mlops-tmp.yaml
+          
+      - name: Create K8s namespace, if not exists
+        run: |
+          kubectl create namespace mlops || true
+      
+      - name: Deploy to K8s
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          kubectl apply -f kubernetes-mlops-tmp.yaml 
+
+
+
+
+
+

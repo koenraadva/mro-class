@@ -1,0 +1,19 @@
+name: MLOps Automation
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  start:
+    uses: ./.github/workflows/azure-ai.yml
+    with:
+      # Set these to "true" if you want to run these pipeline steps or "false" to skip it
+      data_prep: true 
+      ai_training: false
+      api_creation: false
+      process_data: true
+      split_data: true
+      train_on_local: true
+      local_deployment: true
+    secrets: inherit

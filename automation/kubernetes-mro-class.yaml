@@ -1,0 +1,39 @@
+# Kubernetes deployment for mro-class
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mro-class
+  namespace: mro-class
+  labels:
+    app: mro-class
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mro-class
+  template:
+    metadata:
+      labels:
+        app: mro-class
+    spec:
+      containers:
+      - name: mro-class
+        image: ghcr.io/koenraadva/mro-class:$GIT_SHA
+        ports:
+        - containerPort: 80
+---
+# NodePort service for mro-class
+apiVersion: v1
+kind: Service
+metadata:
+  name: mro-class
+  namespace: mro-class
+spec:
+  type: NodePort
+  selector:
+    app: mro-class
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
