@@ -12,8 +12,8 @@ jobs:
       data_prep: true 
       ai_training: false
       api_creation: false
-      process_data: true
-      split_data: true
+      process_data: false
+      split_data: false
       train_on_local: true
       local_deployment: false
       k8s_deployment: false
