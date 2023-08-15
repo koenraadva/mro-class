@@ -279,6 +279,8 @@ jobs:
             type=ref,event=branch
             type=ref,event=tag
             type=sha
+            flavor: |
+              latest=auto
       
       # Enter your GITHUB Token here!
       - name: Login to GHCR
