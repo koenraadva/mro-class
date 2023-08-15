@@ -312,7 +312,7 @@ jobs:
       - name: Pass GitHub actions parameters to Kubernetes deployment
         working-directory: ${{ env.WORKDIR }}
         run: |
-          envsubst <  kubernetes-mlops.yaml > kubernetes-mlops-tmp.yaml
+          envsubst <  kubernetes-mro-class.yaml > kubernetes-mro-class-tmp.yaml
           
       - name: Create K8s namespace, if not exists
         run: |
