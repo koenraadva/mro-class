@@ -6,6 +6,7 @@ name: MLOps Azure Data Preparing and AI Training
 on:
   # Triggers the workflow on push or pull request events
   workflow_call:
+    # branches: [ main, master ]
     inputs:
       data_prep:
         description: 'Data Preparation'
@@ -50,7 +51,6 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    # branches: [ main, master ]
     inputs:
       data_prep:
         description: 'Data Preparation'
@@ -58,12 +58,12 @@ on:
         required: true
         default: true
       process_data:
-        description: 'Check to skip the processing of the original Dataset'
+        description: 'Processing of the original Dataset'
         type: boolean
         default: true
         required: true
       split_data:
-        description: 'Check to skip the Split of the Training and Testing sets'
+        description: 'Split of Training and Testing sets'
         type: boolean
         default: true
         required: true

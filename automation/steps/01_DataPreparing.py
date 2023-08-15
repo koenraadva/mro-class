@@ -10,6 +10,7 @@ from utils import connectWithAzure
 from azureml.core import Dataset
 from azureml.data.datapath import DataPath
 
+# Download of stopwords is required for Github Actions
 import nltk
 nltk.download("stopwords")
 
