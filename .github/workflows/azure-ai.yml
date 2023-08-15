@@ -28,13 +28,13 @@ on:
         type: boolean
         required: true
         default: false
-      api_creation:
-        description: 'API Creation'
+      train_on_local:
+        description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'
         type: boolean
         default: false
         required: true
-      train_on_local:
-        description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'
+      api_creation:
+        description: 'API Creation'
         type: boolean
         default: false
         required: true
@@ -72,13 +72,13 @@ on:
         type: boolean
         required: true
         default: true
-      api_creation:
-        description: 'API Creation'
+      train_on_local:
+        description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'
         type: boolean
         default: false
         required: true
-      train_on_local:
-        description: 'Should we train the AI model on the runner? Otherwise we train on Azure cloud machine'
+      api_creation:
+        description: 'API Creation'
         type: boolean
         default: false
         required: true

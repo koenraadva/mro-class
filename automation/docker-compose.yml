@@ -1,8 +1,10 @@
+version: "2.1"
 services:
   api:
     # It seems like it doesn't like to use my MacBook, as this image was created on a Linux machine...
     # I can't seem to test it on this machine, but will test it later on another PC, in another recording
-    image: ghcr.io/koenraadva/mro-class
+    image: ghcr.io/koenraadva/mro-class:sha-45916f5
+
     ports:
       - "8000:80"
     # In case we want to have another Python script to be executed (because we made a small mistake using the Model name ...
