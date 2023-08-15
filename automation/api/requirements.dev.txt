@@ -1,5 +1,4 @@
 fastapi[all]==0.70.1
-# tensorflow==2.7.0
-# Pillow==8.4.0
 nltk==3.7
 numpy
+scikit-learn==1.1.3
