@@ -37,7 +37,7 @@ async def predict_class(product: str, lang: Optional[str] = 'norwegian'):
     # Some proper error handling would be nice here if language is not supported
     model = MRO_LANG.index(lang)
 
-    # Then predict the class
+    # Then predict the MRO class
     data = np.array([product])
     pred_class = models[model].predict(data)[0]
 
