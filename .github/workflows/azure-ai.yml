@@ -39,12 +39,12 @@ on:
         default: false
         required: true
       local_deployment:
-        description: 'Check if we should deploy the API locally later on.'
+        description: 'Local deployment of API at a later stage.'
         type: boolean
         default: false
         required: true
       k8s_deployment:
-        description: 'Check if we should deploy on local Kubernetes cluster.'
+        description: 'Deploy on local Kubernetes cluster.'
         type: boolean
         default: false
         required: true
@@ -83,12 +83,12 @@ on:
         default: false
         required: true
       local_deployment:
-        description: 'Check if we should deploy the API locally later on.'
+        description: 'Local deployment of API at a later stage.'
         type: boolean
         default: false
         required: true
       k8s_deployment:
-        description: 'Check if we should deploy on local Kubernetes cluster.'
+        description: 'Deploy on local Kubernetes cluster.'
         type: boolean
         default: false
         required: true
