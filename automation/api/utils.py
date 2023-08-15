@@ -1,6 +1,10 @@
 from nltk.corpus import stopwords
 import re
 
+# Download of stopwords is required for Docker image
+import nltk
+nltk.download("stopwords")
+
 def text_preprocessing(text, language, minWordSize):
     
     # remove html
