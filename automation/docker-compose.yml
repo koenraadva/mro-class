@@ -3,7 +3,8 @@ services:
   api:
     # It seems like it doesn't like to use my MacBook, as this image was created on a Linux machine...
     # I can't seem to test it on this machine, but will test it later on another PC, in another recording
-    image: ghcr.io/koenraadva/mro-class:sha-159bd7c
+    #image: ghcr.io/koenraadva/mro-class:1c1858eb6a7ce24a9285256a3c894d17d41649da
+    image: ghcr.io/koenraadva/mro-class:latest
 
     ports:
       - "8000:80"

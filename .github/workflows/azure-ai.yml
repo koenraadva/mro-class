@@ -277,6 +277,7 @@ jobs:
           # More info: https://github.com/docker/build-push-action/blob/master/docs/advanced/tags-labels.md
           tags: |
             type=ref,event=branch
+            type=ref,event=tag
             type=sha
       
       # Enter your GITHUB Token here!
