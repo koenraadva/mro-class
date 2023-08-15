@@ -321,7 +321,7 @@ jobs:
       - name: Deploy to K8s
         working-directory: ${{ env.WORKDIR }}
         run: |
-          kubectl apply -f kubernetes-mlops-tmp.yaml 
+          kubectl apply -f kubernetes-mro-class-tmp.yaml 
 
 
 
