@@ -325,6 +325,7 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         run: |
           kubectl apply -f kubernetes-mro-class-tmp.yaml 
+          kubectl rollout restart deployment/mro-class
 
 
 

@@ -15,7 +15,6 @@ app.add_middleware(
 )
 
 # It would've been better to use environment variables...
-# Currently only norwegian is supported
 MRO_LANG = "norwegian,french,russian"
 
 MRO_LANG = MRO_LANG.split(',')
